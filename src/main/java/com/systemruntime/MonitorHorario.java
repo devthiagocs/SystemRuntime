@@ -1,0 +1,53 @@
+package com.systemruntime;
+
+import java.time.LocalTime;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
+public class MonitorHorario {
+    private ScheduledExecutorService scheduler;
+    private boolean redeDesativada = false;
+    private LocalTime horarioBase;
+    private long tempoBase;
+
+    public void iniciar(LocalTime horarioDesejado) {
+        scheduler = Executors.newSingleThreadScheduledExecutor();
+        scheduler.scheduleAtFixedRate(() -> {
+            System.out.println("Verificando o horario...");
+
+            if (!redeDesativada) {
+                try {
+                    LocalTime horarioAtual = ObterHorario.obterHorario();
+                    System.out.println("Horário atual: " + horarioAtual);
+
+                    horarioBase = horarioAtual;
+                    tempoBase = System.nanoTime();
+                    if (!horarioAtual.isBefore(horarioDesejado)) {
+                        ControleRede.desativar("Wi-Fi");
+                        System.out.println("Desativou");
+                        redeDesativada = true;
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } else {
+                try {
+                    long tempoPassado = System.nanoTime() - tempoBase;
+                    long segundosPassados = TimeUnit.NANOSECONDS.toSeconds(tempoPassado);
+                    LocalTime horarioAtual = horarioBase.plusSeconds(segundosPassados);
+                    System.out.println("Horário estimado: " + horarioAtual);
+                    if (!horarioAtual.isBefore(LocalTime.of(16, 25))) {
+                        ControleRede.ativar("Wi-Fi");
+                        System.out.println("Ativou");
+                        redeDesativada = false;
+                    }
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }, 0, 10, TimeUnit.SECONDS);
+    }
+
+}
