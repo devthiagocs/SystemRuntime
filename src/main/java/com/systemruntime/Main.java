@@ -7,7 +7,7 @@ import java.time.LocalTime;
 
 public class Main {
     public static void main(String[] args) throws Exception {
-        File arquivo = new File("horario.txt");
+        File arquivo = Configuracao.ARQUIVO;
 
         if (args.length == 0) {
             if (!arquivo.exists()) {
@@ -37,8 +37,11 @@ public class Main {
         leitura.close();
 
         LocalTime horarioConfigurado = LocalTime.parse(horarioTxt);
-        ControleRede.ativar("Wi-Fi");
-        ControleRede.ativar("Ethernet");
+        try {
+            ControleRede.ativar();
+        } catch (Exception e) {
+            System.out.println("Não foi possível ativar a rede!");
+        }
 
         MonitorHorario monitor = new MonitorHorario();
         monitor.iniciar(horarioConfigurado);

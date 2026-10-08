@@ -9,6 +9,9 @@ import java.time.format.DateTimeParseException;
 import java.util.Scanner;
 
 public class Configuracao {
+    public static final File PASTA = new File(System.getenv("ProgramData"), "SystemRuntime");
+    public static final File ARQUIVO = new File(PASTA, "horario.txt");
+
     public String configurarHorario(File arquivo) {
         System.out.println(" =========== BLOQUEIO DOS COMPUTADORES =========== ");
         Scanner leitura = new Scanner(System.in);
@@ -22,7 +25,8 @@ public class Configuracao {
             }
 
             try {
-                FileWriter file = new FileWriter("horario.txt");
+                PASTA.mkdirs();
+                FileWriter file = new FileWriter(ARQUIVO);
                 file.write(horarioConfiguracao);
                 file.close();
             } catch (IOException e) {

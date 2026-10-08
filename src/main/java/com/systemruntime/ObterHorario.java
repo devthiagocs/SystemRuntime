@@ -5,22 +5,26 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
+import java.time.Duration;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
 
 import org.json.JSONObject;
 
 public class ObterHorario {
-    public static LocalTime obterHorario() {
-        String timezone = "America%2FSao_Paulo";
-        String url = "https://timeapi.io/api/v1/time/current/zone?timezone=" + timezone;
-        LocalTime horaAtual = null;
+    private static final String TIMEZONE = "America%2FSao_Paulo";
+    private static final String URL = "https://timeapi.io/api/v1/time/current/zone?timezone=" + TIMEZONE;
 
+    public static LocalTime obterHorario() {
+        LocalTime horaAtual = null;
         try {
-            HttpClient client = HttpClient.newHttpClient();
+            HttpClient client = HttpClient.newBuilder()
+                    .connectTimeout(Duration.ofSeconds(5))
+                    .build();
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(url))
-                    .header("Accept", "accept: */*")
+                    .uri(URI.create(URL))
+                    .timeout(Duration.ofSeconds(5))
+                    .header("Accept", "*/*")
                     .GET()
                     .build();
 
@@ -38,5 +42,19 @@ public class ObterHorario {
             e.printStackTrace();
         }
         return horaAtual;
+    }
+
+    public static LocalTime obterHorarioComTentativas(int tentativas, int pausaSegundos) throws InterruptedException {
+        for (int i = 1; i <= tentativas; i++) {
+            LocalTime hora = obterHorario();
+            if (hora != null) {
+                return hora;
+            }
+            System.out.println("Tentativa " + i + " de " + tentativas + " falhou.");
+            if (i < tentativas) {
+                Thread.sleep(pausaSegundos * 1000L);
+            }
+        }
+        return null;
     }
 }

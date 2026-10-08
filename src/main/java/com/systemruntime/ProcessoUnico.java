@@ -10,7 +10,8 @@ public class ProcessoUnico {
     private static FileLock bloqueio;
 
     public static boolean iniciar() throws Exception {
-        File arquivo = new File("systemruntime.lock");
+        Configuracao.PASTA.mkdirs();
+        File arquivo = new File(Configuracao.PASTA, "systemruntime.lock");
         canal = new FileOutputStream(arquivo).getChannel();
         bloqueio = canal.tryLock();
 

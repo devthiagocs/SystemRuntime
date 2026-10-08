@@ -10,21 +10,27 @@ public class MonitorHorario {
     private boolean redeDesativada = false;
     private LocalTime horarioBase;
     private long tempoBase;
+    private static final LocalTime FIM = LocalTime.of(17, 30);
+    private LocalTime inicio;
 
     public void iniciar(LocalTime horarioDesejado) {
+        this.inicio = horarioDesejado;
         scheduler = Executors.newSingleThreadScheduledExecutor();
         scheduler.scheduleAtFixedRate(() -> {
             System.out.println("Verificando o horario...");
 
             if (!redeDesativada) {
                 try {
-                    LocalTime horarioAtual = ObterHorario.obterHorario();
+                    LocalTime horarioAtual = ObterHorario.obterHorarioComTentativas(4, 5);
+                    if (horarioAtual == null) {
+                        return;
+                    }
                     System.out.println("Horário atual: " + horarioAtual);
 
                     horarioBase = horarioAtual;
                     tempoBase = System.nanoTime();
-                    if (!horarioAtual.isBefore(horarioDesejado)) {
-                        ControleRede.desativar("Wi-Fi");
+                    if (dentroDaJanela(horarioAtual)) {
+                        ControleRede.desativar();
                         System.out.println("Desativou");
                         redeDesativada = true;
                     }
@@ -37,8 +43,8 @@ public class MonitorHorario {
                     long segundosPassados = TimeUnit.NANOSECONDS.toSeconds(tempoPassado);
                     LocalTime horarioAtual = horarioBase.plusSeconds(segundosPassados);
                     System.out.println("Horário estimado: " + horarioAtual);
-                    if (!horarioAtual.isBefore(LocalTime.of(16, 25))) {
-                        ControleRede.ativar("Wi-Fi");
+                    if (!dentroDaJanela(horarioAtual)) {
+                        ControleRede.ativar();
                         System.out.println("Ativou");
                         redeDesativada = false;
                     }
@@ -47,7 +53,14 @@ public class MonitorHorario {
                     e.printStackTrace();
                 }
             }
-        }, 0, 10, TimeUnit.SECONDS);
+        }, 0, 1, TimeUnit.MINUTES);
+    }
+
+    private boolean dentroDaJanela(LocalTime agora) {
+        if (inicio.isBefore(FIM)) {
+            return !agora.isBefore(inicio) && agora.isBefore(FIM);
+        }
+        return !agora.isBefore(inicio) || agora.isBefore(FIM);
     }
 
 }
