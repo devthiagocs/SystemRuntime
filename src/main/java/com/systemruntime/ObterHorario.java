@@ -39,7 +39,7 @@ public class ObterHorario {
             System.out.println(horaAtual);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            Configuracao.log("Erro na requisição: " + e);
         }
         return horaAtual;
     }

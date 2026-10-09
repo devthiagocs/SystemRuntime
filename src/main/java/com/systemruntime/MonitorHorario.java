@@ -23,6 +23,7 @@ public class MonitorHorario {
                 try {
                     LocalTime horarioAtual = ObterHorario.obterHorarioComTentativas(12, 5);
                     if (horarioAtual == null) {
+                        Configuracao.log("API indisponível nessa consulta");
                         return;
                     }
                     System.out.println("Horário atual: " + horarioAtual);
@@ -31,11 +32,11 @@ public class MonitorHorario {
                     tempoBase = System.nanoTime();
                     if (dentroDaJanela(horarioAtual)) {
                         ControleRede.desativar();
-                        System.out.println("Desativou");
+                        Configuracao.log("Placa de rede desativada!");
                         redeDesativada = true;
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    Configuracao.log("Erro" + e);
                 }
             } else {
                 try {
@@ -45,12 +46,14 @@ public class MonitorHorario {
                     System.out.println("Horário estimado: " + horarioAtual);
                     if (!dentroDaJanela(horarioAtual)) {
                         ControleRede.ativar();
-                        System.out.println("Ativou");
+                        Configuracao.log("Placa de rede ativada!");
                         redeDesativada = false;
+                    } else {
+                        ControleRede.desativar();
                     }
 
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    Configuracao.log("Erro " + e);
                 }
             }
         }, 0, 1, TimeUnit.MINUTES);

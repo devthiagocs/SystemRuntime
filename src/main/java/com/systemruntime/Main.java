@@ -14,11 +14,6 @@ public class Main {
                 Configuracao configuracao = new Configuracao();
                 configuracao.configurarHorario(arquivo);
             }
-            // LocalTime horarioConfiguracao = LocalTime.parse(horarioDigitado);
-            // ControleRede.ativar("Wi-Fi");
-
-            // MonitorHorario monitor = new MonitorHorario();
-            // monitor.iniciar(horarioConfiguracao);
             TarefaWindows.configurar();
 
             String caminhoPrograma = ProcessHandle.current().info().command().orElseThrow();
@@ -31,6 +26,7 @@ public class Main {
             System.out.println("O processo já está em execução.");
             return;
         }
+        Configuracao.log("Programa Iniciado.");
 
         BufferedReader leitura = new BufferedReader(new FileReader(arquivo));
         String horarioTxt = leitura.readLine();
@@ -40,11 +36,10 @@ public class Main {
         try {
             ControleRede.ativar();
         } catch (Exception e) {
-            System.out.println("Não foi possível ativar a rede!" + e.getMessage());
+            Configuracao.log("Não foi possível ativar a rede no início: " + e.getMessage());
         }
 
         MonitorHorario monitor = new MonitorHorario();
         monitor.iniciar(horarioConfigurado);
-
     }
 }
