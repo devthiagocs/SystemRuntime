@@ -10,7 +10,7 @@ public class MonitorHorario {
     private boolean redeDesativada = false;
     private LocalTime horarioBase;
     private long tempoBase;
-    private static final LocalTime FIM = LocalTime.of(17, 30);
+    private static final LocalTime FIM = LocalTime.of(07, 57);
     private LocalTime inicio;
 
     public void iniciar(LocalTime horarioDesejado) {
@@ -21,7 +21,7 @@ public class MonitorHorario {
 
             if (!redeDesativada) {
                 try {
-                    LocalTime horarioAtual = ObterHorario.obterHorarioComTentativas(4, 5);
+                    LocalTime horarioAtual = ObterHorario.obterHorarioComTentativas(12, 5);
                     if (horarioAtual == null) {
                         return;
                     }
@@ -53,7 +53,7 @@ public class MonitorHorario {
                     e.printStackTrace();
                 }
             }
-        }, 0, 1, TimeUnit.MINUTES);
+        }, 0, 5, TimeUnit.SECONDS);
     }
 
     private boolean dentroDaJanela(LocalTime agora) {

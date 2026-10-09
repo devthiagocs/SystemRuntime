@@ -40,7 +40,7 @@ public class Main {
         try {
             ControleRede.ativar();
         } catch (Exception e) {
-            System.out.println("Não foi possível ativar a rede!");
+            System.out.println("Não foi possível ativar a rede!" + e.getMessage());
         }
 
         MonitorHorario monitor = new MonitorHorario();
