@@ -53,7 +53,7 @@ public class MonitorHorario {
                     e.printStackTrace();
                 }
             }
-        }, 0, 5, TimeUnit.SECONDS);
+        }, 0, 1, TimeUnit.MINUTES);
     }
 
     private boolean dentroDaJanela(LocalTime agora) {
